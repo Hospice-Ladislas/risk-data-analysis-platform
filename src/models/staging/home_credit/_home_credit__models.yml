@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_home_credit__application_train
+    description: Current loans, with a stable (derived) disbursement date.
+    columns:
+      - name: loanId
+        description: Current loan id (SK_ID_CURR).
+        data_tests: [unique, not_null]
+      - name: disbursementDate
+        description: Fake disbursement date derived from a hash of loanId. Stable across runs.
+        data_tests: [not_null]
+
+  - name: stg_home_credit__previous_application
+    description: Previous loans and their credit amount.
+    columns:
+      - name: previousLoanId
+        description: Previous loan id (SK_ID_PREV).
+        data_tests: [unique, not_null]
+      - name: amtCredit
+        description: Final credit amount granted on the previous loan.
+
+  - name: stg_home_credit__installments_payments
+    description: One row per payment on a previous-loan instalment.
+    columns:
+      - name: loanId
+        description: Current loan id of the client (SK_ID_CURR).
+        data_tests: [not_null]
+      - name: previousLoanId
+        description: Previous loan the payment belongs to (SK_ID_PREV).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_home_credit__previous_application')
+                field: previousLoanId
+              config:
+                severity: warn
+      - name: numInstalmentNumber
+        description: Instalment number within the previous loan.
+      - name: daysInstalmentScheduled
+        description: Due date of the instalment, in days relative to the current application.
+      - name: daysInstalmentPaid
+        description: Actual payment date, in days relative to the current application. Null if unpaid.
+      - name: amtInstalmentScheduled
+        description: Amount due for the instalment.
+      - name: amtInstalmentPaid
+        description: Amount actually paid in this payment row.

@@ -1,0 +1,14 @@
+# dbt artifacts
+target/
+dbt_packages/
+logs/
+
+# Data files (too large for git; load with scripts/load_raw_data.sh)
+data/
+*.csv
+
+# Secrets
+.env
+*.json.key
+service-account*.json
+profiles.yml

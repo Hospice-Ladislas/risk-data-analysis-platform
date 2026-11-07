@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: int_loan_payments
+    description: >
+      One row per instalment payment on a previous loan, with calendar dates,
+      a running total paid and the remaining credit amount.
+    columns:
+      - name: previousLoanId
+        data_tests: [not_null]
+      - name: loanId
+        data_tests: [not_null]
+      - name: disbursementDate
+        description: >
+          Null when the client is not in application_train (e.g. test-set clients).
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: paymentDateScheduled
+        description: disbursementDate + daysInstalmentScheduled.
+      - name: paymentDatePaid
+        description: disbursementDate + daysInstalmentPaid. Null if unpaid.
+      - name: cumulativeAmtInstalmentPaid
+        description: Running total paid on the previous loan, up to and including this row.
+      - name: remainingAmtCredit
+        description: >
+          amtCredit minus cumulativeAmtInstalmentPaid. Payments include interest,
+          so this can go negative near the end of a loan.

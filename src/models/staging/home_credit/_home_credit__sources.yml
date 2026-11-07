@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: home_credit
+    description: >
+      Home Credit Default Risk dataset, loaded as-is into BigQuery
+      by scripts/load_raw_data.sh.
+    schema: raw
+    tables:
+      - name: application_train
+        description: Current loan applications, one row per loan.
+        columns:
+          - name: SK_ID_CURR
+            data_tests: [unique, not_null]
+
+      - name: previous_application
+        description: Earlier loans of the same clients, one row per previous loan.
+        columns:
+          - name: SK_ID_PREV
+            data_tests: [unique, not_null]
+
+      - name: installments_payments
+        description: Repayment history of previous loans. One instalment can have several payment rows.
+        columns:
+          - name: SK_ID_PREV
+            data_tests: [not_null]
